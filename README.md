@@ -32,5 +32,4 @@ We also utilized the npm packaged, called [*dotenv*](https://www.npmjs.com/packa
 ## References
 - [NodeJS](https://nodejs.org/en/)
 - [ExpressJS](https://expressjs.com/)
-- [Google Maps Documentation](https://developers.google.com/maps/documentation)
 - [Environmental Variables](https://stackabuse.com/managing-environment-variables-in-node-js-with-dotenv/)
