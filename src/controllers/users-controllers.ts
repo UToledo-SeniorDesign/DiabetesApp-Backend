@@ -51,7 +51,7 @@ const createUser = async(req: Request, res: Response, next: Next) => {
     }
 
     // Create the new user object
-    const createdUser:IUserSchema = new UserModel({
+    const createdUser = new UserModel({
         first_name: first_name,
         last_name: last_name,
         email: email,
@@ -74,7 +74,7 @@ const createUser = async(req: Request, res: Response, next: Next) => {
     
 }
 
-const loginUser = (req: Request, res: Response, next: Next) => {
+const loginUser = async(req: Request, res: Response, next: Next) => {
     const errors = validationResult(req);   // Validate request
     if (!errors.isEmpty()){                 // If we got an error/missing data from request
         console.log(errors);
@@ -85,6 +85,24 @@ const loginUser = (req: Request, res: Response, next: Next) => {
     }
 
     const { email, password } = req.body;   // Grab fields needed to login
+
+    let existingUser:IUserSchema | null;
+    try {
+        existingUser = await UserModel.findOne({email: email})
+    } catch(err){
+        // We got an error fetching the user from the DB
+        const message = "It's not you, it's us... please try again later.";
+        const error = new HttpError(message, 500);
+        return next(error);
+    }
+
+    if (!existingUser || existingUser.password !== password){
+        // If we couldn't find a user with that email or the povided password doesn't match the DB password
+        const message = "Failed logging, email or password are incorrect."
+        return next(new HttpError(message, 401));
+    }
+
+    res.status(200).json({user:existingUser.toObject({getters: true}) })
 
 }
 
