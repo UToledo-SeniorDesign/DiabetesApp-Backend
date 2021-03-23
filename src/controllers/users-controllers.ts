@@ -36,7 +36,7 @@ const createUser = async(req: Request, res: Response, next: Next) => {
     try {
         existingUser = await UserModel.findOne({email: email});     // Lookup email in the DB
     } catch{
-        const message = "Creating user failed, please try again later.";
+        const message = "It's not you, it's us... please try again later.";
         const errorCode = 500;
         const error = new HttpError(message, errorCode);
         return next(error);
@@ -44,7 +44,7 @@ const createUser = async(req: Request, res: Response, next: Next) => {
 
     if (existingUser) {
         // If user exists already
-        const message = "User exists already, please login instead.";
+        const message = "Email is already in use, try logging in instead.";
         const errorCode = 422;
         const error = new HttpError(message, errorCode);
         return next(error);
@@ -63,7 +63,8 @@ const createUser = async(req: Request, res: Response, next: Next) => {
     try {
         await createdUser.save();               // Save the user into the DB
     } catch (err) {
-        const message = "Creating user failed, please try again later.";
+        // Failed creating the user
+        const message = "It's not you, it's us... please try again later.";
         const errorCode = 500;
         const error = new HttpError(message, errorCode);
         return next(error);

@@ -8,7 +8,7 @@ const UserSchema: Schema = new Schema({
     last_name:  { type:String, required: true   },
     email:      { type: String, required: true, unique: true },
     password:   { type: String, required: true, minlength: 6 },
-    image:      { type: String, required: true  },
+    image:      { type: String, required: false  },
     meals:     [{ type: mongoose.Types.ObjectId, required: true, ref: 'Meal' }],
 });
 

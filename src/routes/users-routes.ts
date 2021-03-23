@@ -21,7 +21,6 @@ route.post('/signup',
         check('password')
             .isLength({min: 6}),
         check('image')
-            .notEmpty()
     ],
     usersController.createUser
 );

@@ -10,6 +10,7 @@ export interface IUserSchema extends Document {
     email: string;
     password: string;
     meals: Array<IMealSchema['id']>;
+    img: string;
 }
 
 export interface IMealSchema extends Document {
