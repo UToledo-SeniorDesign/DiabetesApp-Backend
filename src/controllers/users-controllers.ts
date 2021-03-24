@@ -1,6 +1,9 @@
 /**
  * Controller to handle the middleware functions that are reached for
  * 'users' routes.
+ * 
+ * To secure passwords we are using bycrypt to handle hashing/salting
+ *  - https://auth0.com/blog/hashing-in-action-understanding-bcrypt/
 */
 
 import {
@@ -9,6 +12,7 @@ import {
     NextFunction as Next
 } from 'express';
 import { validationResult } from 'express-validator';
+import bcrypt from 'bcrypt';
 
 import HttpError from '../models/http-error';
 import UserModel from '../models/users';
@@ -18,6 +22,7 @@ const internalError = new HttpError(        // We'll throw/return this for inter
     "It's not you, it's us... please try again later.",
     500
 );
+const saltRounds = 10;                      // Total rounds to salt the passwords
 
 const createUser = async(req: Request, res: Response, next: Next) => {
     const errors = validationResult(req);   // Validate request
@@ -53,12 +58,21 @@ const createUser = async(req: Request, res: Response, next: Next) => {
         return next(error);
     }
 
-    // Create the new user object
+    let securePassword:string;      // Password that will hash/salt to store in the DB
+    try {
+        // Hash and salt the password
+        securePassword = await bcrypt.hash(password, saltRounds);
+    } catch(err){
+        // There was some error hashing/salting the password
+        return next(internalError);
+    }
+
+    // Create the user with the secure password to be stored in the DB
     const createdUser = new UserModel({
         first_name: first_name,
         last_name: last_name,
         email: email,
-        password: password,
+        password: securePassword,
         image: image,
         meals: []
     });
@@ -85,6 +99,10 @@ const loginUser = async(req: Request, res: Response, next: Next) => {
     }
 
     const { email, password } = req.body;   // Grab fields needed to login
+    const invalidUserErr = new HttpError(   // Error object if the email/password is wrong
+        "Failed logging, email or password are incorrect.",
+        401
+    );
 
     let existingUser:IUserSchema | null;
     try {
@@ -93,15 +111,25 @@ const loginUser = async(req: Request, res: Response, next: Next) => {
         // We got an error fetching the user from the DB
         return next(internalError);
     }
+    if (!existingUser){
+        // If the we didn't find a user with the given email
+        return next(invalidUserErr);
+    }
 
-    if (!existingUser || existingUser.password !== password){
-        // If we couldn't find a user with that email or the povided password doesn't match the DB password
-        const message = "Failed logging, email or password are incorrect."
-        return next(new HttpError(message, 401));
+    // We get here if we found a user with the given emai, now we need to verify the password
+    let isValidPassword:boolean;
+    try {
+        isValidPassword = await bcrypt.compare(password, existingUser.password);
+    } catch(err){
+        // If there was some error validating the password
+        return next(internalError);
+    }
+    if (!isValidPassword){
+        // The passwords didn't match
+        return next(invalidUserErr);
     }
 
     res.status(200).json({user:existingUser.toObject({getters: true}) })
-
 }
 
 
