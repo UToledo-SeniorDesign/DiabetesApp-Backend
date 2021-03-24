@@ -13,16 +13,28 @@ import {
 } from 'express';
 import { validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 import HttpError from '../models/http-error';
 import UserModel from '../models/users';
 import type { IUserSchema } from '../types/schema-types';
+
+interface IResponse {
+    // This is the data we are going to send back the client
+    first_name: string;
+    last_name: string;
+    email: string;
+    token: string;
+    img: string;
+}
+
 
 const internalError = new HttpError(        // We'll throw/return this for internal errors
     "It's not you, it's us... please try again later.",
     500
 );
 const saltRounds = 10;                      // Total rounds to salt the passwords
+const tokenExpDate = '60d';                 // Tokens will work for two months
 
 const createUser = async(req: Request, res: Response, next: Next) => {
     const errors = validationResult(req);   // Validate request
@@ -83,9 +95,33 @@ const createUser = async(req: Request, res: Response, next: Next) => {
         // Failed creating the user
         return next(internalError);
     }
+
+    // Now we need to create a token
+    let token:string;
+    try {
+        token = jwt.sign(
+            {
+                userId: createdUser.id,
+                email: createdUser.email
+            },
+            'secret',
+            { expiresIn: tokenExpDate }
+        );   
+    } catch(err){
+        // If we fail creating a token
+        return next(internalError);
+    }
+
+    // Create the response we are going to send the client
+    const userResponse:IResponse = {
+        first_name: createdUser.first_name,
+        last_name:  createdUser.last_name,
+        email:      createdUser.email,
+        img:        createdUser.img,
+        token:      token
+    }
     
-    res.status(201).json({user:createdUser.toObject({getters: true}) });
-    
+    res.status(201).json({user: userResponse });
 }
 
 const loginUser = async(req: Request, res: Response, next: Next) => {
@@ -129,7 +165,32 @@ const loginUser = async(req: Request, res: Response, next: Next) => {
         return next(invalidUserErr);
     }
 
-    res.status(200).json({user:existingUser.toObject({getters: true}) })
+    // We get here if the user is valid, now lets create the token
+    let token;
+    try {
+        token = jwt.sign(
+            {
+                userId: existingUser.id, 
+                email: existingUser.email
+            },
+            'secret',
+            {expiresIn: tokenExpDate}
+        );
+    } catch(err){
+        // If there was an issue creating the token
+        return next(internalError);
+    }
+
+    // Create the response we are going to send the client
+    const userResponse:IResponse = {
+        first_name: existingUser.first_name,
+        last_name:  existingUser.last_name,
+        email:      existingUser.email,
+        img:        existingUser.img,
+        token:      token
+    }
+
+    res.status(200).json({user: userResponse});
 }
 
 
