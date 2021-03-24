@@ -14,6 +14,11 @@ import HttpError from '../models/http-error';
 import UserModel from '../models/users';
 import type { IUserSchema } from '../types/schema-types';
 
+const internalError = new HttpError(        // We'll throw/return this for internal errors
+    "It's not you, it's us... please try again later.",
+    500
+);
+
 const createUser = async(req: Request, res: Response, next: Next) => {
     const errors = validationResult(req);   // Validate request
     if (!errors.isEmpty()){                 // If we got an error/missing data from request
@@ -35,11 +40,9 @@ const createUser = async(req: Request, res: Response, next: Next) => {
     let existingUser;               // Will use this to check if the user/email already exists in the DB
     try {
         existingUser = await UserModel.findOne({email: email});     // Lookup email in the DB
-    } catch{
-        const message = "It's not you, it's us... please try again later.";
-        const errorCode = 500;
-        const error = new HttpError(message, errorCode);
-        return next(error);
+    } catch (err) {
+        // Error when trying to fetch a user with the given email
+        return next(internalError);
     }
 
     if (existingUser) {
@@ -64,10 +67,7 @@ const createUser = async(req: Request, res: Response, next: Next) => {
         await createdUser.save();               // Save the user into the DB
     } catch (err) {
         // Failed creating the user
-        const message = "It's not you, it's us... please try again later.";
-        const errorCode = 500;
-        const error = new HttpError(message, errorCode);
-        return next(error);
+        return next(internalError);
     }
     
     res.status(201).json({user:createdUser.toObject({getters: true}) });
@@ -91,9 +91,7 @@ const loginUser = async(req: Request, res: Response, next: Next) => {
         existingUser = await UserModel.findOne({email: email})
     } catch(err){
         // We got an error fetching the user from the DB
-        const message = "It's not you, it's us... please try again later.";
-        const error = new HttpError(message, 500);
-        return next(error);
+        return next(internalError);
     }
 
     if (!existingUser || existingUser.password !== password){
