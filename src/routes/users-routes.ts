@@ -31,7 +31,6 @@ route.post('/login',
             .normalizeEmail()
             .isEmail(),
         check('password')
-            .isLength({min: 6})
     ],
     usersController.loginUser
 );
