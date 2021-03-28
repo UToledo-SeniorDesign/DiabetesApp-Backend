@@ -22,10 +22,11 @@ import type { IUserSchema } from '../types/schema-types';
 interface IResponse {
     // This is the data we are going to send back the client
     first_name: string;
-    last_name: string;
-    email: string;
-    token: string;
-    img: string;
+    last_name:  string;
+    email:      string;
+    token:      string;
+    img:        string;
+    id:         string;
 }
 
 
@@ -118,6 +119,7 @@ const createUser = async(req: Request, res: Response, next: Next) => {
         last_name:  createdUser.last_name,
         email:      createdUser.email,
         img:        createdUser.img,
+        id:         createdUser.id,
         token:      token
     }
     
@@ -187,6 +189,7 @@ const loginUser = async(req: Request, res: Response, next: Next) => {
         last_name:  existingUser.last_name,
         email:      existingUser.email,
         img:        existingUser.img,
+        id:         existingUser.id,
         token:      token
     }
 
