@@ -14,9 +14,10 @@ export interface IUserSchema extends Document {
 }
 
 export interface IMealSchema extends Document {
-    calories: number;
-    name: string;
-    creator: IUserSchema['id'];
+    name: string;                               // Name given to this meal by the creator
+    totCarbs: number;                           // Total carbs for this meal
+    foodItems: Array<IFoodItemSchema['id']>;    // List of food items attached to this meal
+    creator: IUserSchema['id'];                 // ID of the user who created the meal
 }
 
 export interface IFoodItemSchema extends Document {
