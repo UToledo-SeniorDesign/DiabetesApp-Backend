@@ -16,7 +16,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 import HttpError from '../models/http-error';
-import UserModel from '../models/users';
+import UserModel from '../models/schema/user-schema';
 import type { IUserSchema } from '../types/schema-types';
 
 interface IResponse {
