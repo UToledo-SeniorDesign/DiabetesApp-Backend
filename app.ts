@@ -12,6 +12,7 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 
 import usersRoute from './src/routes/users-routes';
+import mealsRoute from './src/routes/meals-routes';
 import HttpError from './src/models/http-error';
 
 dotenv.config();
@@ -30,6 +31,7 @@ app.use((req: Request, res: Response, next: Next) => {
     next();
 });
 
+app.use('/api/meals', mealsRoute);               // Request for users to add a meal
 app.use('/api/users', usersRoute);              // Requests to login/signup user
 
 app.use ((req:Request, res:Response, next:Next) => {
