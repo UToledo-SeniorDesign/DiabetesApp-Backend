@@ -9,6 +9,8 @@ import * as mealsControllers from '../controllers/meals-controllers';
 
 const route = Router();
 
+route.get('/:uId', mealsControllers.getMealsByUserId);
+
 route.post('/', 
     [
         check('creator_id')
@@ -31,7 +33,9 @@ route.post('/',
         check('food_items.*.total_servings')
             .notEmpty()
             .isNumeric()
-            .toInt(),        
+            .toInt(),
+        check('food_items.*.brand')
+            .notEmpty(),
     ], 
     mealsControllers.addMeal
 );

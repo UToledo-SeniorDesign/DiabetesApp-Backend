@@ -1,14 +1,18 @@
 import mongoose, { Schema } from 'mongoose';
-import uniqueValidator from 'mongoose-unique-validator';
 
 import type { IMealSchema } from '../../types/schema-types';
 
 const MealSchema: Schema = new Schema({
     name:       { type: String, required: true  },
     totCarbs:   { type: Number, required: true  },
-    foodItems:  [{ type: mongoose.Types.ObjectId, required: true, ref: 'FoodItem'   }],
-    creator:    { type: mongoose.Types.ObjectId, required: true, red: 'User'        },
-    createdTime: { type: Date, required: true   }
+    creator:    { type: mongoose.Types.ObjectId, required: true, red: 'User'},
+    foodItems:  { type: {
+        name:   { type: String, required: true  },
+        serving_carb: { type: Number, required: true    },
+        total_servings: { type: Number, required: true  },
+        brand: {type: String, require: false    }
+    },required: true}
+    // createdTime: { type: Date, required: true   }
 });
 
 const MealModel = mongoose.model<IMealSchema>('Meal', MealSchema);

@@ -24,4 +24,5 @@ export interface IFoodItemSchema extends Document {
     name: string;           // Name of this food
     totServings: number;    // Total servings for this food
     servingCarbs: number;   // Carbs per servings
+    brand: string;
 }

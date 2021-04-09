@@ -31,7 +31,7 @@ app.use((req: Request, res: Response, next: Next) => {
     next();
 });
 
-app.use('api/meals', mealsRoute);               // Request for users to add a meal
+app.use('/api/meals', mealsRoute);               // Request for users to add a meal
 app.use('/api/users', usersRoute);              // Requests to login/signup user
 
 app.use ((req:Request, res:Response, next:Next) => {
