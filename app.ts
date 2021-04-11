@@ -13,7 +13,9 @@ import dotenv from 'dotenv';
 
 import usersRoute from './src/routes/users-routes';
 import mealsRoute from './src/routes/meals-routes';
+import insulinRoute from './src/routes/insulin-routes';
 import HttpError from './src/models/http-error';
+
 
 dotenv.config();
 
@@ -31,8 +33,10 @@ app.use((req: Request, res: Response, next: Next) => {
     next();
 });
 
-app.use('/api/meals', mealsRoute);               // Request for users to add a meal
-app.use('/api/users', usersRoute);              // Requests to login/signup user
+app.use('/api/meals', mealsRoute);          // Request for users' meals
+app.use('/api/users', usersRoute);          // Requests to login/signup user
+app.use('/api/insulin', insulinRoute);      // Requests for users' insulin
+
 
 app.use ((req:Request, res:Response, next:Next) => {
     const error = new HttpError('Could not find this route.', 404);
