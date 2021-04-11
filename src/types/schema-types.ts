@@ -21,8 +21,14 @@ export interface IMealSchema extends Document {
 }
 
 export interface IFoodItemSchema extends Document {
-    name: string;           // Name of this food
-    totServings: number;    // Total servings for this food
-    servingCarbs: number;   // Carbs per servings
-    brand: string;
+    name: string;                               // Name of this food
+    totServings: number;                        // Total servings for this food
+    servingCarbs: number;                       // Carbs per servings
+    brand?: string;                             // Brand of the food, if any
+}
+
+export interface IInsulingSchema extends Document {
+    creator: IUserSchema['id'];                 // User who submitted the insulin intake
+    createdTime: Date;                          // Date of when was this insulin added
+    insulinDoseScale: string;                   // Sliding scale insul scale value (Low, medium, high)
 }
