@@ -9,8 +9,9 @@ export interface IUserSchema extends Document {
     last_name: string;
     email: string;
     password: string;
-    meals: Array<IMealSchema['id']>;
     img: string;
+    meals: Array<IMealSchema['id']>;
+    insulins: Array<IInsulingSchema['id']>;
 }
 
 export interface IMealSchema extends Document {

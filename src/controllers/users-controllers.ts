@@ -87,7 +87,8 @@ const createUser = async(req: Request, res: Response, next: Next) => {
         email: email,
         password: securePassword,
         image: image,
-        meals: []
+        meals: [],
+        insulins: []
     });
 
     try {

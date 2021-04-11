@@ -10,6 +10,7 @@ const UserSchema: Schema = new Schema({
     password:   { type: String, required: true, minlength: 6 },
     image:      { type: String, required: false  },
     meals:     [{ type: mongoose.Types.ObjectId, required: true, ref: 'Meal' }],
+    insulins:     [{ type: mongoose.Types.ObjectId, required: true, ref: 'Insulin' }],
 });
 
 UserSchema.plugin(uniqueValidator);     // Query email faster and makes sure that emails are unique
