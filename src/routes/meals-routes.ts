@@ -26,11 +26,11 @@ route.post('/',
             .toInt(),
         check('food_items.*.name')
             .notEmpty(),
-        check('food_items.*.serving_carb')
+        check('food_items.*.servingCarbs')
             .notEmpty()
             .isNumeric()
             .toInt(),
-        check('food_items.*.total_servings')
+        check('food_items.*.totServings')
             .notEmpty()
             .isNumeric()
             .toInt(),
